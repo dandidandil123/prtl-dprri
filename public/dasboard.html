@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Dashboard - Portal Data DPR RI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'count-up': 'countUp 2s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        countUp: {
+                            '0%': { transform: 'scale(0.5)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        }
+                    },
+                    screens: {
+                        'xs': '320px',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    
+    <!-- Navigation - Mobile First -->
+    <nav class="bg-white/90 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-indigo-100">
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+        <div class="flex justify-between items-center h-12 sm:h-16">
+            <div class="flex items-center space-x-1 sm:space-x-4 min-w-0 flex-1">
+                <i class="fas fa-chart-bar text-lg sm:text-2xl text-indigo-600 flex-shrink-0"></i>
+                <h1 class="text-sm sm:text-xl font-bold text-gray-800 truncate">Dashboard DPR RI</h1>
+                <span class="hidden md:inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-semibold">NEW DB</span>
+            </div>
+            <div class="flex items-center space-x-1 sm:space-x-4">
+                <!-- Tombol ke Web 1 -->
+                <a href="/" class="bg-orange-100 hover:bg-orange-200 text-orange-600 font-medium transition-colors duration-200 flex items-center px-2 py-1 rounded-lg" title="Dashboard Web Lama">
+                    <i class="fas fa-arrow-right text-sm sm:text-base"></i>
+                    <span class="hidden sm:inline ml-1 text-xs sm:text-sm">DPRK / DPRD</span>
+                </a>
+                
+                <a href="/" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors duration-200 flex items-center px-2 py-1 rounded-lg">
+                    <i class="fas fa-search text-sm sm:text-base"></i>
+                    <span class="hidden sm:inline ml-1 text-sm sm:text-base">Pencarian</span>
+                </a>
+                <a href="dasboard.html" class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors duration-200 flex items-center px-2 py-1 rounded-lg">
+                    <i class="fas fa-chart-bar text-sm sm:text-base"></i>
+                    <span class="hidden sm:inline ml-1 text-sm sm:text-base">Dashboard</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+    <!-- Header - Mobile Optimized -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div class="text-center animate-slide-up">
+            <h1 class="text-2xl xs:text-3xl sm:text-4xl font-bold text-gray-800 mb-3 sm:mb-4">
+                📊 Dashboard Analytics DPR RI
+            </h1>
+            <p class="text-base sm:text-xl text-gray-600 mb-4 sm:mb-8 px-2">
+                Visualisasi Data Anggota Dewan Perwakilan Rakyat
+            </p>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-12">
+        <div class="text-center">
+            <div class="inline-flex items-center space-x-3">
+                <div class="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-indigo-600"></div>
+                <span class="text-base sm:text-xl text-gray-600">Memuat data dashboard...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div id="dashboardContent" class="hidden max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pb-6 sm:pb-12">
+        
+        <!-- Stats Cards - Mobile Optimized -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+            <div class="bg-white/70 backdrop-blur-sm rounded-lg sm:rounded-xl shadow-lg p-3 sm:p-6 border border-white/30 animate-fade-in">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div class="mb-2 sm:mb-0">
+                        <p class="text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wide">Total Anggota</p>
+                        <p id="totalMembers" class="text-lg sm:text-2xl font-bold text-indigo-600 animate-count-up">0</p>
+                    </div>
+                    <div class="bg-indigo-100 rounded-full p-2 sm:p-3 w-8 h-8 sm:w-auto sm:h-auto flex items-center justify-center">
+                        <i class="fas fa-users text-indigo-600 text-sm sm:text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white/70 backdrop-blur-sm rounded-lg sm:rounded-xl shadow-lg p-3 sm:p-6 border border-white/30 animate-fade-in">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div class="mb-2 sm:mb-0">
+                        <p class="text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wide">Total Fraksi</p>
+                        <p id="totalFraksi" class="text-lg sm:text-2xl font-bold text-green-600 animate-count-up">0</p>
+                    </div>
+                    <div class="bg-green-100 rounded-full p-2 sm:p-3 w-8 h-8 sm:w-auto sm:h-auto flex items-center justify-center">
+                        <i class="fas fa-flag text-green-600 text-sm sm:text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white/70 backdrop-blur-sm rounded-lg sm:rounded-xl shadow-lg p-3 sm:p-6 border border-white/30 animate-fade-in">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div class="mb-2 sm:mb-0">
+                        <p class="text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wide">Total Partai</p>
+                        <p id="totalPartai" class="text-lg sm:text-2xl font-bold text-purple-600 animate-count-up">0</p>
+                    </div>
+                    <div class="bg-purple-100 rounded-full p-2 sm:p-3 w-8 h-8 sm:w-auto sm:h-auto flex items-center justify-center">
+                        <i class="fas fa-building text-purple-600 text-sm sm:text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white/70 backdrop-blur-sm rounded-lg sm:rounded-xl shadow-lg p-3 sm:p-6 border border-white/30 animate-fade-in">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div class="mb-2 sm:mb-0">
+                        <p class="text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wide">Rata-rata Usia</p>
+                        <p id="avgAge" class="text-lg sm:text-2xl font-bold text-orange-600 animate-count-up">0</p>
+                    </div>
+                    <div class="bg-orange-100 rounded-full p-2 sm:p-3 w-8 h-8 sm:w-auto sm:h-auto flex items-center justify-center">
+                        <i class="fas fa-calendar text-orange-600 text-sm sm:text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Comparison Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 mb-6 sm:mb-8">
+            <!-- Gender Distribution Pie Chart -->
+            <div class="bg-white/70 backdrop-blur-sm rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 border border-white/30 animate-fade-in">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                    <i class="fas fa-venus-mars mr-2 sm:mr-3 text-green-600"></i>
+                    <span class="text-sm sm:text-base">Distribusi Gender</span>
+                </h3>
+                <div class="relative h-64 sm:h-80">
+                    <canvas id="genderChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Province Distribution Chart -->
+            <div class="bg-white/70 backdrop-blur-sm rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 border border-white/30 animate-fade-in">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                    <i class="fas fa-map-marked-alt mr-2 sm:mr-3 text-blue-600"></i>
+                    <span class="text-sm sm:text-base">Top 10 Provinsi</span>
+                </h3>
+                <div class="relative h-64 sm:h-80">
+                    <canvas id="provinceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 1 - Mobile Optimized -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 mb-6 sm:mb-8">
+            <!-- Pendidikan Chart -->
+            <div class="bg-white/70 backdrop-blur-sm rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 border border-white/30 animate-fade-in">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                    <i class="fas fa-graduation-cap mr-2 sm:mr-3 text-indigo-600"></i>
+                    <span class="text-sm sm:text-base">Distribusi Pendidikan Terakhir</span>
+                </h3>
+                <div class="relative h-64 sm:h-80">
+                    <canvas id="educationChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Fraksi Chart -->
+            <div class="bg-white/70 backdrop-blur-sm rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 border border-white/30 animate-fade-in">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                    <i class="fas fa-flag mr-2 sm:mr-3 text-green-600"></i>
+                    <span class="text-sm sm:text-base">Distribusi per Fraksi</span>
+                </h3>
+                <div class="relative h-64 sm:h-80">
+                    <canvas id="fraksiChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 2 - Mobile Optimized -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 mb-6 sm:mb-8">
+            <!-- Agama Chart -->
+            <div class="bg-white/70 backdrop-blur-sm rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 border border-white/30 animate-fade-in">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                    <i class="fas fa-pray mr-2 sm:mr-3 text-purple-600"></i>
+                    <span class="text-sm sm:text-base">Distribusi Agama</span>
+                </h3>
+                <div class="relative h-64 sm:h-80">
+                    <canvas id="agamaChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Usia Chart -->
+            <div class="bg-white/70 backdrop-blur-sm rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 border border-white/30 animate-fade-in">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                    <i class="fas fa-calendar-alt mr-2 sm:mr-3 text-orange-600"></i>
+                    <span class="text-sm sm:text-base">Distribusi Usia</span>
+                </h3>
+                <div class="relative h-64 sm:h-80">
+                    <canvas id="usiaChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Lists - Mobile Optimized -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8">
+            <!-- Top Fraksi -->
+            <div class="bg-white/70 backdrop-blur-sm rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 border border-white/30 animate-fade-in">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                    <i class="fas fa-trophy mr-2 sm:mr-3 text-yellow-500"></i>
+                    <span class="text-sm sm:text-base">Top 5 Fraksi</span>
+                </h3>
+                <div id="topFraksi" class="space-y-2 sm:space-y-3">
+                    <!-- Will be populated by JS -->
+                </div>
+            </div>
+
+            <!-- Top Partai -->
+            <div class="bg-white/70 backdrop-blur-sm rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 border border-white/30 animate-fade-in">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                    <i class="fas fa-medal mr-2 sm:mr-3 text-blue-500"></i>
+                    <span class="text-sm sm:text-base">Top 5 Partai</span>
+                </h3>
+                <div id="topPartai" class="space-y-2 sm:space-y-3">
+                    <!-- Will be populated by JS -->
+                </div>
+            </div>
+
+            <!-- Education Stats -->
+            <div class="bg-white/70 backdrop-blur-sm rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 border border-white/30 animate-fade-in md:col-span-2 lg:col-span-1">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                    <i class="fas fa-book mr-2 sm:mr-3 text-indigo-500"></i>
+                    <span class="text-sm sm:text-base">Statistik Pendidikan</span>
+                </h3>
+                <div id="educationStats" class="space-y-2 sm:space-y-3">
+                    <!-- Will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Export & Download Section -->
+        <div class="bg-white/70 backdrop-blur-sm rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 border border-white/30 animate-fade-in mt-6 sm:mt-8">
+            <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-download mr-2 sm:mr-3 text-indigo-600"></i>
+                <span class="text-sm sm:text-base">Export Data</span>
+            </h3>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                
+                <button id="exportCSV" class="flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-green-100 hover:bg-green-200 text-green-800 rounded-lg transition-colors text-sm">
+                    <i class="fas fa-table mr-2"></i>
+                    <span>Download CSV</span>
+                </button>
+                
+                <button id="generateReport" class="flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition-colors text-sm">
+                    <i class="fas fa-file-pdf mr-2"></i>
+                    <span>Generate Report</span>
+                </button>
+            </div>
+            
+            <div id="exportProgress" class="hidden mt-4">
+                <div class="bg-gray-200 rounded-full h-2">
+                    <div id="exportProgressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <p class="text-xs sm:text-sm text-gray-600 mt-2" id="exportStatus">Preparing export...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 sm:py-8 mt-8 sm:mt-12">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 text-center">
+            <p class="text-base sm:text-lg mb-2">&copy; 2025 Dashboard DPR RI</p>
+            <p class="text-sm sm:text-base text-gray-400">
+                Real-time Analytics • Powered by Anonim
+            </p>
+        </div>
+    </footer>
+
+    <!-- Include the updated JavaScript -->
+    <script>
+      
+
+// API Configuration
+const API_CONFIG = {
+  LOCAL_URL: 'http://localhost:3000',
+  PRODUCTION_URL: 'https://nameprojectyour.onrender.com',
+  
+  get BASE_URL() {
+    return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+      ? this.LOCAL_URL 
+      : this.PRODUCTION_URL;
+  },
+  
+  ENDPOINTS: {
+    STATS: '/api/stats',
+    DOWNLOAD_CSV: '/api/export'
+  }
+};
+
+// Enhanced API Service Class
+class APIService {
+  constructor() {
+    this.baseURL = API_CONFIG.BASE_URL;
+    this.timeout = 30000;
+  }
+
+  async request(endpoint, options = {}) {
+    const url = `${this.baseURL}${endpoint}`;
+    const config = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      },
+      ...options
+    };
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+      
+      const response = await fetch(url, {
+        ...config,
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        throw new Error('Request timeout - server tidak merespons');
+      }
+      throw error;
+    }
+  }
+
+  async getStats() {
+    return await this.request(API_CONFIG.ENDPOINTS.STATS);
+  }
+
+  async downloadCSV() {
+    const response = await fetch(`${this.baseURL}${API_CONFIG.ENDPOINTS.DOWNLOAD_CSV}`);
+    if (!response.ok) {
+      throw new Error('Failed to download CSV');
+    }
+    return await response.blob();
+  }
+
+  async exportData(format = 'json') {
+    return await this.request(`${API_CONFIG.ENDPOINTS.EXPORT}?format=${format}`);
+  }
+}
+
+// Main Dashboard Class
+class DPRDashboard {
+  constructor() {
+    this.loading = document.getElementById('loading');
+    this.dashboardContent = document.getElementById('dashboardContent');
+    this.charts = {};
+    this.api = new APIService();
+    
+    this.initDashboard();
+  }
+
+  async initDashboard() {
+    try {
+      this.showLoading();
+      const stats = await this.fetchStats();
+      this.hideLoading();
+      
+      this.updateStatsCards(stats);
+      this.createCharts(stats);
+      this.updateTopLists(stats);
+      
+    } catch (error) {
+      console.error('Dashboard error:', error);
+      this.hideLoading();
+      this.showError('Gagal memuat data dashboard');
+    }
+  }
+
+  async fetchStats() {
+    try {
+      const response = await this.api.getStats();
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch stats:', error);
+      throw error;
+    }
+  }
+
+  showLoading() {
+    this.loading.classList.remove('hidden');
+    this.dashboardContent.classList.add('hidden');
+  }
+
+  hideLoading() {
+    this.loading.classList.add('hidden');
+    this.dashboardContent.classList.remove('hidden');
+  }
+
+  showError(message) {
+    this.loading.innerHTML = `
+      <div class="text-center">
+        <div class="bg-red-100 border border-red-300 text-red-700 px-4 sm:px-6 py-3 sm:py-4 rounded-xl">
+          <i class="fas fa-exclamation-triangle text-xl sm:text-2xl mb-2"></i>
+          <p class="text-base sm:text-lg">${message}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  updateStatsCards(stats) {
+    // Get total members from stats
+    const totalMembers = stats.total && stats.total[0] ? stats.total[0].count : 0;
+    
+    // Animate count up
+    this.animateCountUp('totalMembers', totalMembers);
+    this.animateCountUp('totalFraksi', stats.byFraksi ? stats.byFraksi.length : 0);
+    this.animateCountUp('totalPartai', stats.byPartai ? stats.byPartai.length : 0);
+    
+    // Calculate average age
+    const avgAge = this.calculateAverageAge(stats.byUsia || []);
+    this.animateCountUp('avgAge', avgAge, ' th');
+  }
+
+  animateCountUp(elementId, targetValue, suffix = '') {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    
+    const duration = 2000;
+    const startTime = performance.now();
+    const startValue = 0;
+
+    const animate = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      const currentValue = Math.floor(startValue + (targetValue - startValue) * easeOut);
+      
+      element.textContent = currentValue + suffix;
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    
+    requestAnimationFrame(animate);
+  }
+
+  calculateAverageAge(usiaData) {
+    let totalAge = 0;
+    let totalCount = 0;
+    
+    usiaData.forEach(item => {
+      const kategori = item.kategori_usia;
+      const count = item.count;
+      
+      let avgAge = 0;
+      if (kategori.includes('30-40')) avgAge = 35;
+      else if (kategori.includes('41-50')) avgAge = 45;
+      else if (kategori.includes('51-60')) avgAge = 55;
+      else if (kategori.includes('Di atas 60')) avgAge = 65;
+      else if (kategori.includes('Di bawah 30')) avgAge = 25;
+      
+      totalAge += avgAge * count;
+      totalCount += count;
+    });
+    
+    return totalCount > 0 ? Math.round(totalAge / totalCount) : 0;
+  }
+
+  createCharts(stats) {
+    this.createEducationChart(stats.byPendidikan || []);
+    this.createFraksiChart(stats.byFraksi || []);
+    this.createAgamaChart(stats.byAgama || []);
+    this.createUsiaChart(stats.byUsia || []);
+    this.createGenderChart(stats.byGender || []);
+    this.createProvinceChart(stats.byProvinsi || []);
+  }
+
+  createEducationChart(data) {
+    const ctx = document.getElementById('educationChart');
+    if (!ctx) return;
+
+    // Group education levels
+    const educationGroups = {
+      'SMA/Sederajat': 0,
+      'D1/D2/D3': 0,
+      'S1': 0,
+      'S2': 0,
+      'S3': 0,
+      'Lainnya': 0
+    };
+
+    data.forEach(item => {
+      const pendidikan = (item.pendidikan_terakhir || '').toUpperCase();
+      if (pendidikan.includes('SMA') || pendidikan.includes('SMK') || pendidikan.includes('ALIYAH')) {
+        educationGroups['SMA/Sederajat'] += item.count;
+      } else if (pendidikan.includes('DIPLOMA') || pendidikan.includes('D1') || pendidikan.includes('D2') || pendidikan.includes('D3')) {
+        educationGroups['D1/D2/D3'] += item.count;
+      } else if (pendidikan.includes('S1')) {
+        educationGroups['S1'] += item.count;
+      } else if (pendidikan.includes('S2')) {
+        educationGroups['S2'] += item.count;
+      } else if (pendidikan.includes('S3')) {
+        educationGroups['S3'] += item.count;
+      } else if (item.pendidikan_terakhir && item.pendidikan_terakhir !== '') {
+        educationGroups['Lainnya'] += item.count;
+      }
+    });
+
+    const labels = Object.keys(educationGroups);
+    const values = Object.values(educationGroups);
+
+    this.charts.education = new Chart(ctx.getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: values,
+          backgroundColor: [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'
+          ],
+          borderWidth: 2,
+          borderColor: '#ffffff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 15,
+              usePointStyle: true,
+              font: {
+                size: window.innerWidth < 640 ? 10 : 12
+              }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((context.parsed * 100) / total).toFixed(1);
+                return `${context.label}: ${context.parsed} (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  createFraksiChart(data) {
+    const ctx = document.getElementById('fraksiChart');
+    if (!ctx) return;
+    
+    // Take top 8 fraksi and ensure we have data
+    const validData = data.filter(item => item.fraksi && item.count > 0);
+    const topFraksi = validData.slice(0, 8);
+    
+    if (topFraksi.length === 0) {
+      // Show no data message
+      ctx.getContext('2d').font = '16px Arial';
+      ctx.getContext('2d').fillText('Data tidak tersedia', 50, 50);
+      return;
+    }
+    
+    this.charts.fraksi = new Chart(ctx.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: topFraksi.map(item => this.truncateLabel(item.fraksi, window.innerWidth < 640 ? 10 : 15)),
+        datasets: [{
+          label: 'Jumlah Anggota',
+          data: topFraksi.map(item => item.count),
+          backgroundColor: 'rgba(59, 130, 246, 0.8)',
+          borderColor: 'rgb(59, 130, 246)',
+          borderWidth: 1,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              font: {
+                size: window.innerWidth < 640 ? 10 : 12
+              }
+            }
+          },
+          x: {
+            ticks: {
+              maxRotation: window.innerWidth < 640 ? 90 : 45,
+              font: {
+                size: window.innerWidth < 640 ? 9 : 11
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  createAgamaChart(data) {
+    const ctx = document.getElementById('agamaChart');
+    if (!ctx) return;
+    
+    const validData = data.filter(item => item.agama && item.count > 0);
+    
+    if (validData.length === 0) {
+      ctx.getContext('2d').font = '16px Arial';
+      ctx.getContext('2d').fillText('Data tidak tersedia', 50, 50);
+      return;
+    }
+    
+    this.charts.agama = new Chart(ctx.getContext('2d'), {
+      type: 'pie',
+      data: {
+        labels: validData.map(item => item.agama || 'Tidak Diketahui'),
+        datasets: [{
+          data: validData.map(item => item.count),
+          backgroundColor: [
+            '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#F97316'
+          ],
+          borderWidth: 2,
+          borderColor: '#ffffff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 15,
+              usePointStyle: true,
+              font: {
+                size: window.innerWidth < 640 ? 10 : 12
+              }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((context.parsed * 100) / total).toFixed(1);
+                return `${context.label}: ${context.parsed} (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  createUsiaChart(data) {
+    const ctx = document.getElementById('usiaChart');
+    if (!ctx) return;
+    
+    if (!data || data.length === 0) {
+      ctx.getContext('2d').font = '16px Arial';
+      ctx.getContext('2d').fillText('Data tidak tersedia', 50, 50);
+      return;
+    }
+    
+    // Sort by age order
+    const sortedData = data.sort((a, b) => {
+      const order = {
+        'Di bawah 30': 1,
+        '30-40 tahun': 2,
+        '41-50 tahun': 3,
+        '51-60 tahun': 4,
+        'Di atas 60': 5,
+        'Tidak diketahui': 6
+      };
+      return (order[a.kategori_usia] || 7) - (order[b.kategori_usia] || 7);
+    });
+    
+    this.charts.usia = new Chart(ctx.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: sortedData.map(item => window.innerWidth < 640 ? 
+          item.kategori_usia.replace(' tahun', '') : item.kategori_usia),
+        datasets: [{
+          label: 'Jumlah Anggota',
+          data: sortedData.map(item => item.count),
+          backgroundColor: [
+            '#8B5CF6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#6B7280'
+          ],
+          borderWidth: 1,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              font: {
+                size: window.innerWidth < 640 ? 10 : 12
+              }
+            }
+          },
+          x: {
+            ticks: {
+              maxRotation: window.innerWidth < 640 ? 90 : 45,
+              font: {
+                size: window.innerWidth < 640 ? 9 : 11
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  createGenderChart(data) {
+    const ctx = document.getElementById('genderChart');
+    if (!ctx) return;
+    
+    // Use data from API if available, otherwise estimate
+    let genderData = [];
+    if (data && data.length > 0) {
+      genderData = data;
+    } else {
+      // Fallback estimation
+      const total = 573;
+      genderData = [
+        { gender: 'Laki-laki (Est.)', count: Math.floor(total * 0.78) },
+        { gender: 'Perempuan (Est.)', count: Math.floor(total * 0.20) },
+        { gender: 'Tidak Pasti', count: Math.floor(total * 0.02) }
+      ];
+    }
+    
+    this.charts.gender = new Chart(ctx.getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: genderData.map(item => item.gender || item.kategori_gender),
+        datasets: [{
+          data: genderData.map(item => item.count),
+          backgroundColor: ['#3B82F6', '#EF4444', '#6B7280'],
+          borderWidth: 2,
+          borderColor: '#ffffff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 15,
+              usePointStyle: true,
+              font: {
+                size: window.innerWidth < 640 ? 10 : 12
+              }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((context.parsed * 100) / total).toFixed(1);
+                return `${context.label}: ${context.parsed} (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  createProvinceChart(data) {
+    const ctx = document.getElementById('provinceChart');
+    if (!ctx) return;
+    
+    let provinceData = [];
+    
+    if (data && data.length > 0) {
+      provinceData = data.slice(0, 10);
+    } else {
+      // Fallback data - this should be replaced with real province analysis from dapil
+      provinceData = [
+        {provinsi: 'Jawa Barat', count: 91},
+        {provinsi: 'Jawa Timur', count: 87},
+        {provinsi: 'Jawa Tengah', count: 77},
+        {provinsi: 'Sumatera Utara', count: 30},
+        {provinsi: 'Sumatera Selatan', count: 24},
+        {provinsi: 'DKI Jakarta', count: 21},
+        {provinsi: 'Sulawesi Selatan', count: 20},
+        {provinsi: 'Lampung', count: 18},
+        {provinsi: 'Riau', count: 16},
+        {provinsi: 'Kalimantan Selatan', count: 14}
+      ];
+    }
+    
+    this.charts.province = new Chart(ctx.getContext('2d'), {
+      type: window.innerWidth < 768 ? 'bar' : 'horizontalBar',
+      data: {
+        labels: provinceData.map(item => 
+          window.innerWidth < 640 ? 
+          this.truncateLabel(item.provinsi || item.province, 8) : 
+          (item.provinsi || item.province)
+        ),
+        datasets: [{
+          label: 'Jumlah Anggota',
+          data: provinceData.map(item => item.count),
+          backgroundColor: 'rgba(59, 130, 246, 0.8)',
+          borderColor: 'rgb(59, 130, 246)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: window.innerWidth < 768 ? 'x' : 'y',
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: {
+              font: { size: window.innerWidth < 640 ? 9 : 11 }
+            }
+          },
+          y: {
+            ticks: {
+              font: { size: window.innerWidth < 640 ? 9 : 11 }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  updateTopLists(stats) {
+    this.updateTopFraksi((stats.byFraksi || []).slice(0, 5));
+    this.updateTopPartai((stats.byPartai || []).slice(0, 5));
+    this.updateEducationStats(stats.byPendidikan || []);
+  }
+
+  updateTopFraksi(data) {
+    const container = document.getElementById('topFraksi');
+    if (!container || data.length === 0) {
+      if (container) {
+        container.innerHTML = '<div class="text-center text-gray-500 py-4">Data tidak tersedia</div>';
+      }
+      return;
+    }
+    
+    const total = data.reduce((sum, item) => sum + item.count, 0);
+    
+    container.innerHTML = data.map((item, index) => {
+      const percentage = total > 0 ? ((item.count / total) * 100).toFixed(1) : 0;
+      const colors = ['bg-yellow-500', 'bg-gray-400', 'bg-amber-600', 'bg-blue-500', 'bg-green-500'];
+      const maxLength = window.innerWidth < 640 ? 12 : 20;
+      
+      return `
+        <div class="flex items-center justify-between p-2 sm:p-3 bg-white rounded-lg shadow-sm border animate-slide-up" style="animation-delay: ${index * 100}ms">
+          <div class="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+            <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full ${colors[index]} flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
+              ${index + 1}
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="font-medium text-gray-800 text-xs sm:text-sm truncate" title="${item.fraksi}">${this.truncateLabel(item.fraksi, maxLength)}</p>
+              <p class="text-xs text-gray-500">${percentage}%</p>
+            </div>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <p class="font-bold text-gray-800 text-sm sm:text-base">${item.count}</p>
+            <p class="text-xs text-gray-500">anggota</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  updateTopPartai(data) {
+    const container = document.getElementById('topPartai');
+    if (!container || data.length === 0) {
+      if (container) {
+        container.innerHTML = '<div class="text-center text-gray-500 py-4">Data tidak tersedia</div>';
+      }
+      return;
+    }
+    
+    const total = data.reduce((sum, item) => sum + item.count, 0);
+    
+    container.innerHTML = data.map((item, index) => {
+      const percentage = total > 0 ? ((item.count / total) * 100).toFixed(1) : 0;
+      const colors = ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-red-500', 'bg-indigo-500'];
+      const maxLength = window.innerWidth < 640 ? 10 : 15;
+      
+      return `
+        <div class="flex items-center justify-between p-2 sm:p-3 bg-white rounded-lg shadow-sm border animate-slide-up" style="animation-delay: ${index * 100}ms">
+          <div class="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+            <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full ${colors[index]} flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
+              ${index + 1}
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="font-medium text-gray-800 text-xs sm:text-sm truncate" title="${item.partai}">${this.truncateLabel(item.partai, maxLength)}</p>
+              <p class="text-xs text-gray-500">${percentage}%</p>
+            </div>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <p class="font-bold text-gray-800 text-sm sm:text-base">${item.count}</p>
+            <p class="text-xs text-gray-500">anggota</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  updateEducationStats(data) {
+    const container = document.getElementById('educationStats');
+    if (!container || data.length === 0) {
+      if (container) {
+        container.innerHTML = '<div class="text-center text-gray-500 py-4">Data tidak tersedia</div>';
+      }
+      return;
+    }
+    
+    // Group and calculate education statistics
+    const educationGroups = {
+      'S3': 0,
+      'S2': 0,
+      'S1': 0,
+      'Diploma': 0,
+      'SMA/Sederajat': 0
+    };
+
+    data.forEach(item => {
+      const pendidikan = (item.pendidikan_terakhir || '').toUpperCase();
+      if (pendidikan.includes('S3')) {
+        educationGroups['S3'] += item.count;
+      } else if (pendidikan.includes('S2')) {
+        educationGroups['S2'] += item.count;
+      } else if (pendidikan.includes('S1')) {
+        educationGroups['S1'] += item.count;
+      } else if (pendidikan.includes('DIPLOMA') || pendidikan.includes('D1') || pendidikan.includes('D2') || pendidikan.includes('D3')) {
+        educationGroups['Diploma'] += item.count;
+      } else if (pendidikan.includes('SMA') || pendidikan.includes('SMK')) {
+        educationGroups['SMA/Sederajat'] += item.count;
+      }
+    });
+
+    const total = Object.values(educationGroups).reduce((sum, count) => sum + count, 0);
+
+    container.innerHTML = Object.entries(educationGroups)
+      .filter(([_, count]) => count > 0)
+      .sort(([,a], [,b]) => b - a)
+      .map(([level, count], index) => {
+        const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+        const icons = {
+          'S3': 'fas fa-user-graduate',
+          'S2': 'fas fa-graduation-cap',
+          'S1': 'fas fa-university',
+          'Diploma': 'fas fa-certificate',
+          'SMA/Sederajat': 'fas fa-school'
+        };
+        
+        return `
+          <div class="flex items-center justify-between p-2 sm:p-3 bg-white rounded-lg shadow-sm border animate-slide-up" style="animation-delay: ${index * 100}ms">
+            <div class="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+              <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                <i class="${icons[level]} text-indigo-600 text-xs sm:text-sm"></i>
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="font-medium text-gray-800 text-xs sm:text-sm">${level}</p>
+                <p class="text-xs text-gray-500">${percentage}%</p>
+              </div>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <p class="font-bold text-gray-800 text-sm sm:text-base">${count}</p>
+              <p class="text-xs text-gray-500">orang</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+  }
+
+  truncateLabel(text, maxLength) {
+    if (!text) return 'N/A';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength - 3) + '...';
+  }
+}
+
+// Dashboard Features Class (Export functionality only)
+class DashboardFeatures {
+  constructor() {
+    this.api = new APIService();
+    this.setupExportFeatures();
+  }
+
+  setupExportFeatures() {
+    const exportJSON = document.getElementById('exportJSON');
+    const exportCSV = document.getElementById('exportCSV');
+    const generateReport = document.getElementById('generateReport');
+
+    if (exportJSON) {
+      exportJSON.addEventListener('click', () => this.exportData('json'));
+    }
+    
+    if (exportCSV) {
+      exportCSV.addEventListener('click', () => this.downloadCSV());
+    }
+    
+    if (generateReport) {
+      generateReport.addEventListener('click', () => this.generateReport());
+    }
+  }
+
+  async downloadCSV() {
+    const progressDiv = document.getElementById('exportProgress');
+    const statusText = document.getElementById('exportStatus');
+    
+    if (!progressDiv) return;
+    
+    try {
+      progressDiv.classList.remove('hidden');
+      this.updateProgress(20, 'Menghubungi server...');
+      
+      await this.delay(300);
+      this.updateProgress(60, 'Mengunduh CSV...');
+      
+      // Download CSV file directly
+      const blob = await this.api.downloadCSV();
+      
+      this.updateProgress(80, 'Memproses file...');
+      
+      await this.delay(200);
+      this.downloadBlob(blob, 'dpr_data_clean.csv');
+      
+      this.updateProgress(100, 'Download selesai!');
+      setTimeout(() => progressDiv.classList.add('hidden'), 2000);
+      
+    } catch (error) {
+      console.error('CSV download error:', error);
+      statusText.textContent = 'Download gagal: ' + (error.message || 'Unknown error');
+      setTimeout(() => progressDiv.classList.add('hidden'), 3000);
+    }
+  }
+
+  async exportData(format) {
+    const progressDiv = document.getElementById('exportProgress');
+    const statusText = document.getElementById('exportStatus');
+    
+    if (!progressDiv) return;
+    
+    try {
+      progressDiv.classList.remove('hidden');
+      this.updateProgress(20, 'Menghubungi server...');
+      
+      await this.delay(300);
+      this.updateProgress(60, 'Mengunduh data...');
+      
+      const data = await this.api.exportData(format);
+      
+      this.updateProgress(80, 'Memproses JSON...');
+      await this.delay(200);
+      this.downloadJSON(data, 'dpr_data_export.json');
+      
+      this.updateProgress(100, 'Export selesai!');
+      setTimeout(() => progressDiv.classList.add('hidden'), 2000);
+      
+    } catch (error) {
+      console.error('Export error:', error);
+      statusText.textContent = 'Export gagal: ' + (error.message || 'Unknown error');
+      setTimeout(() => progressDiv.classList.add('hidden'), 3000);
+    }
+  }
+
+  updateProgress(percent, status) {
+    const progressBar = document.getElementById('exportProgressBar');
+    const statusText = document.getElementById('exportStatus');
+    
+    if (progressBar) progressBar.style.width = percent + '%';
+    if (statusText) statusText.textContent = status;
+  }
+
+  downloadJSON(data, filename) {
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    this.downloadBlob(blob, filename);
+  }
+
+  downloadBlob(blob, filename) {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  }
+
+  generateReport() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4';
+    modal.innerHTML = `
+      <div class="bg-white rounded-xl p-6 max-w-md w-full text-center">
+        <div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+          <i class="fas fa-file-pdf text-white text-xl"></i>
+        </div>
+        <h3 class="text-lg font-bold text-gray-800 mb-2">Generate Report</h3>
+        <p class="text-gray-600 mb-4">Fitur generate report akan segera tersedia</p>
+        <button onclick="this.parentElement.parentElement.remove()" 
+                class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
+          Tutup
+        </button>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    setTimeout(() => modal.remove(), 5000);
+  }
+
+  delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+}
+
+// Initialize dashboard when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  new DPRDashboard();
+  new DashboardFeatures();
+});
+    </script>
+</body>
+</html>
+
+

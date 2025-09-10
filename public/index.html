@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏛️ Portal Data DPR RI - Express.js Version</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Portal data DPR RI dengan teknologi Express.js dan SQLite">
+    <meta name="keywords" content="DPR RI, anggota DPR, parlemen Indonesia, Express.js">
+    <meta name="robots" content="index, follow">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'pulse-custom': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        }
+                    },
+                    screens: {
+                        'xs': '320px',
+                        'xxs': '280px',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    
+    <!-- Navigation - Mobile First -->
+    <nav class="bg-white/90 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-indigo-100">
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+        <div class="flex justify-between items-center h-12 sm:h-16">
+            <div class="flex items-center space-x-1 sm:space-x-4 min-w-0 flex-1">
+                <i class="fas fa-university text-lg sm:text-2xl text-indigo-600 flex-shrink-0"></i>
+                <h1 class="text-sm sm:text-xl font-bold text-gray-800 truncate">Portal DPR RI</h1>
+                <span class="hidden md:inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-semibold">NEW DB</span>
+            </div>
+            <div class="flex items-center space-x-1 sm:space-x-4">
+                <!-- Tombol ke Web 1 -->
+                <a href="/" class="bg-orange-100 hover:bg-orange-200 text-orange-600 font-medium transition-colors duration-200 flex items-center px-2 py-1 rounded-lg" title="Kembali ke Web Lama">
+                    <i class="fas fa-arrow-right text-sm sm:text-base"></i>
+                    <span class="hidden sm:inline ml-1 text-xs sm:text-sm">DPRK / DPRD</span>
+                </a>
+                
+                <a href="/" class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors duration-200 flex items-center px-2 py-1 rounded-lg">
+                    <i class="fas fa-search text-sm sm:text-base"></i>
+                    <span class="hidden sm:inline ml-1 text-sm sm:text-base">Pencarian</span>
+                </a>
+                <a href="dasboard.html" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors duration-200 flex items-center px-2 py-1 rounded-lg">
+                    <i class="fas fa-chart-bar text-sm sm:text-base"></i>
+                    <span class="hidden sm:inline ml-1 text-sm sm:text-base">Dashboard</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+    <!-- Hero Section - Mobile Optimized -->
+    <div class="relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-indigo-600/20 to-purple-600/20"></div>
+        <div class="relative max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-12">
+            <div class="text-center animate-slide-up">
+                <h1 class="text-2xl xs:text-3xl sm:text-4xl md:text-6xl font-bold text-gray-800 mb-3 sm:mb-4">
+                    🏛️ Portal Data DPR RI
+                </h1>
+                <p class="text-base sm:text-xl text-gray-600 mb-4 sm:mb-6 px-2">
+                    Pencarian Cepat dengan Express.js & SQLite
+                </p>
+                <div class="inline-flex items-center space-x-2 sm:space-x-4 bg-green-100 text-green-800 px-3 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold">
+                    <span class="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full animate-pulse-custom"></span>
+                    <span class="text-xs sm:text-base">500+ Records • ⚡ Super Fast Search</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Section - Mobile Optimized -->
+    <div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div class="bg-white/70 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-8 border border-white/20 animate-fade-in">
+            <div class="flex items-center mb-4 sm:mb-6">
+                <i class="fas fa-search text-xl sm:text-2xl text-indigo-600 mr-2 sm:mr-3"></i>
+                <h2 class="text-lg sm:text-2xl font-bold text-gray-800">Pencarian Anggota DPR</h2>
+            </div>
+            
+            <div class="flex flex-col gap-3 sm:gap-4">
+                <div class="flex-1">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        class="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg border border-gray-300 rounded-lg sm:rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 bg-white/80"
+                        placeholder="Cari nama, fraksi, partai, atau daerah..."
+                        autocomplete="off"
+                    >
+                </div>
+                <div class="flex gap-2 sm:gap-4">
+                    <button 
+                        id="searchBtn"
+                        class="flex-1 sm:flex-none px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg sm:rounded-xl hover:from-indigo-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl text-sm sm:text-base"
+                    >
+                        <i class="fas fa-search mr-2"></i>Cari
+                    </button>
+                    <button 
+                        id="downloadBtn"
+                        class="px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg sm:rounded-xl hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl text-sm sm:text-base"
+                        title="Download Data CSV"
+                    >
+                        <i class="fas fa-download mr-1 sm:mr-2"></i>
+                        <span class="hidden sm:inline">Download</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-3 sm:mt-4 text-gray-600 text-xs sm:text-sm">
+                <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                <span>Tips: Coba cari "PDIP", "PKB", nama daerah, atau nama anggota</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="hidden max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-4">
+        <div class="text-center">
+            <div class="inline-flex items-center space-x-3">
+                <div class="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-indigo-600"></div>
+                <span class="text-base sm:text-lg text-gray-600">Mencari data...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8"></div>
+
+    <!-- Features Section - Mobile Optimized -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-12">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
+            <div class="bg-white/60 backdrop-blur-sm p-4 sm:p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-white/30">
+                <div class="text-center">
+                    <div class="bg-indigo-100 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                        <i class="fas fa-database text-xl sm:text-2xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Database SQLite</h3>
+                    <p class="text-sm sm:text-base text-gray-600">Pencarian super cepat dengan index teroptimasi</p>
+                </div>
+            </div>
+            
+            <div class="bg-white/60 backdrop-blur-sm p-4 sm:p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-white/30">
+                <div class="text-center">
+                    <div class="bg-green-100 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                        <i class="fas fa-users text-xl sm:text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">500+ Anggota DPR</h3>
+                    <p class="text-sm sm:text-base text-gray-600">Data lengkap dan akurat terbaru</p>
+                </div>
+            </div>
+            
+            <div class="bg-white/60 backdrop-blur-sm p-4 sm:p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-white/30 sm:col-span-2 md:col-span-1">
+                <div class="text-center">
+                    <div class="bg-purple-100 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                        <i class="fas fa-bolt text-xl sm:text-2xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Express.js</h3>
+                    <p class="text-sm sm:text-base text-gray-600">API modern dengan performa tinggi</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 sm:py-8 mt-8 sm:mt-12">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 text-center">
+            <p class="text-base sm:text-lg mb-2">&copy; 2025 Portal Data DPR RI - Express.js Version</p>
+            <p class="text-sm sm:text-base text-gray-400">
+                Powered by Express.js + SQLite • Modern Web Technology
+            </p>
+        </div>
+    </footer>
+
+    <!-- Detail Modal - Mobile Optimized -->
+    <div id="detailModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm">
+        <div class="flex items-start justify-center min-h-screen px-2 sm:px-4 py-4 sm:py-8">
+            <div class="bg-white rounded-xl sm:rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+                <div class="p-4 sm:p-6 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg sm:text-2xl font-bold text-gray-800">Detail Anggota DPR</h3>
+                        <button id="closeModal" class="text-gray-500 hover:text-gray-700 text-xl sm:text-2xl p-1">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="modalContent" class="p-4 sm:p-6">
+                    <!-- Modal content will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============= INTEGRATED DPR PORTAL CONFIGURATION =============
+
+// API Configuration
+const API_CONFIG = {
+  LOCAL_URL: 'http://localhost:3000',
+  PRODUCTION_URL: 'https://projectyour.onrender.com', // Ganti dengan URL deploy Anda
+  
+  get BASE_URL() {
+    return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+      ? this.LOCAL_URL 
+      : this.PRODUCTION_URL;
+  },
+  
+  ENDPOINTS: {
+    SEARCH: '/api/search',
+    MEMBERS: '/api/members',
+    STATS: '/api/stats',
+    FILTERS: '/api/filters',
+    EXPORT: '/api/export',
+    DOWNLOAD_CSV: '/download/dpr_data_clean.csv'
+  }
+};
+
+// Enhanced API Service Class
+class APIService {
+  constructor() {
+    this.baseURL = API_CONFIG.BASE_URL;
+    this.timeout = 30000;
+  }
+
+  async request(endpoint, options = {}) {
+    const url = `${this.baseURL}${endpoint}`;
+    const config = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      },
+      ...options
+    };
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+      
+      const response = await fetch(url, {
+        ...config,
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        throw new Error('Request timeout - server tidak merespons');
+      }
+      throw error;
+    }
+  }
+
+  // Search members with enhanced options
+  async searchMembers(query, options = {}) {
+    const payload = {
+      query: query || '',
+      page: options.page || 1,
+      limit: options.limit || 25,
+      sortBy: options.sortBy || 'nama',
+      sortOrder: options.sortOrder || 'ASC',
+      filters: options.filters || {}
+    };
+
+    return await this.request(API_CONFIG.ENDPOINTS.SEARCH, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  // Get member by ID
+  async getMemberById(id) {
+    return await this.request(`${API_CONFIG.ENDPOINTS.MEMBERS}/${id}`);
+  }
+
+  // Get all members with pagination
+  async getMembers(page = 1, limit = 25) {
+    return await this.request(`${API_CONFIG.ENDPOINTS.MEMBERS}?page=${page}&limit=${limit}`);
+  }
+
+  // Get statistics
+  async getStats() {
+    return await this.request(API_CONFIG.ENDPOINTS.STATS);
+  }
+
+  // Get filter options
+  async getFilterOptions() {
+    return await this.request(API_CONFIG.ENDPOINTS.FILTERS);
+  }
+
+  // Export data
+  async exportData(format = 'csv') {
+    if (format === 'csv') {
+      const response = await fetch(`${this.baseURL}${API_CONFIG.ENDPOINTS.DOWNLOAD_CSV}`);
+      if (!response.ok) {
+        throw new Error('Export failed');
+      }
+      return await response.blob();
+    } else {
+      return await this.request(`${API_CONFIG.ENDPOINTS.EXPORT}?format=${format}`);
+    }
+  }
+}
+
+// Enhanced DPR Search Class
+class DPRSearch {
+  constructor() {
+    this.searchInput = document.getElementById('searchInput');
+    this.searchBtn = document.getElementById('searchBtn');
+    this.downloadBtn = document.getElementById('downloadBtn');
+    this.loading = document.getElementById('loading');
+    this.results = document.getElementById('results');
+    this.modal = document.getElementById('detailModal');
+    this.modalContent = document.getElementById('modalContent');
+    this.closeModal = document.getElementById('closeModal');
+    
+    // Pagination state
+    this.currentPage = 1;
+    this.lastQuery = '';
+    this.totalPages = 0;
+    this.isLoading = false;
+    
+    // Initialize API service
+    this.api = new APIService();
+    
+    this.initEventListeners();
+    this.setupAutocomplete();
+  }
+
+  initEventListeners() {
+    // Search functionality
+    this.searchBtn?.addEventListener('click', () => this.performSearch(1));
+    
+    this.searchInput?.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !this.isLoading) {
+        this.performSearch(1);
+      }
+    });
+    
+    // Download functionality
+    this.downloadBtn?.addEventListener('click', () => this.downloadData());
+    
+    // Modal events
+    this.closeModal?.addEventListener('click', () => this.hideModal());
+    this.modal?.addEventListener('click', (e) => {
+      if (e.target === this.modal) this.hideModal();
+    });
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !this.modal?.classList.contains('hidden')) {
+        this.hideModal();
+      }
+    });
+    
+    // Focus search input
+    this.searchInput?.focus();
+  }
+
+  async performSearch(page = 1) {
+    const query = this.searchInput?.value.trim() || '';
+    
+    if (!query && page === 1) {
+      this.showError('Silakan masukkan kata kunci pencarian');
+      return;
+    }
+
+    if (this.isLoading) return;
+
+    try {
+      this.isLoading = true;
+      
+      if (page === 1) {
+        this.showLoading();
+        this.clearResults();
+        this.lastQuery = query;
+      } else {
+        this.showLoadMoreLoading();
+      }
+
+      const data = await this.api.searchMembers(query, { 
+        page, 
+        limit: 25,
+        sortBy: 'nama',
+        sortOrder: 'ASC'
+      });
+
+      this.hideLoading();
+      this.currentPage = page;
+      this.totalPages = data.pagination?.totalPages || 1;
+      
+      if (page === 1) {
+        this.displayResults(data);
+      } else {
+        this.appendResults(data);
+      }
+
+    } catch (error) {
+      this.hideLoading();
+      this.handleError(error, 'Search');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  displayResults(data) {
+    if (!data.results || data.results.length === 0) {
+      this.results.innerHTML = `
+        <div class="max-w-4xl mx-auto">
+          <div class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-4 sm:px-6 py-3 sm:py-4 rounded-xl flex items-center animate-fade-in">
+            <i class="fas fa-info-circle mr-2 sm:mr-3 text-lg sm:text-xl"></i>
+            <span class="text-sm sm:text-lg">Tidak ada hasil untuk pencarian: "<strong>${data.query || this.lastQuery}</strong>"</span>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    let html = `
+      <div class="max-w-7xl mx-auto">
+        <div class="bg-green-100 border border-green-300 text-green-700 px-4 sm:px-6 py-3 sm:py-4 rounded-xl flex items-center mb-4 sm:mb-6 animate-fade-in">
+          <i class="fas fa-check-circle mr-2 sm:mr-3 text-lg sm:text-xl"></i>
+          <span class="text-sm sm:text-lg">
+            Ditemukan <strong>${data.total || data.count || data.results.length}</strong> hasil untuk: "<strong>${data.query || this.lastQuery}</strong>"
+            ${data.pagination ? `(Halaman ${data.pagination.currentPage} dari ${data.pagination.totalPages})` : ''}
+          </span>
+        </div>
+        <div id="resultsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+    `;
+
+    data.results.forEach((member, index) => {
+      html += this.createMemberCard(member, index);
+    });
+
+    html += `</div>`;
+
+    // Add pagination if available
+    if (data.pagination && data.pagination.totalPages > 1) {
+      html += this.createPaginationControls(data.pagination);
+    }
+
+    // Add load more button
+    if (data.pagination?.hasNext) {
+      html += `
+        <div class="text-center mt-6">
+          <button id="loadMoreBtn" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors duration-200 disabled:opacity-50">
+            <i class="fas fa-plus mr-2"></i>Muat Lebih Banyak
+          </button>
+        </div>
+      `;
+    }
+
+    html += `</div>`;
+    this.results.innerHTML = html;
+
+    // Setup load more functionality
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    if (loadMoreBtn) {
+      loadMoreBtn.addEventListener('click', () => {
+        if (!this.isLoading) {
+          this.performSearch(this.currentPage + 1);
+        }
+      });
+    }
+
+    this.setupPaginationEvents();
+  }
+
+  appendResults(data) {
+    const resultsGrid = document.getElementById('resultsGrid');
+    if (!resultsGrid || !data.results) return;
+
+    const startIndex = (this.currentPage - 1) * 25;
+    data.results.forEach((member, index) => {
+      const cardHTML = this.createMemberCard(member, startIndex + index);
+      resultsGrid.insertAdjacentHTML('beforeend', cardHTML);
+    });
+
+    // Update load more button
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    if (loadMoreBtn) {
+      if (data.pagination?.hasNext) {
+        loadMoreBtn.style.display = 'block';
+        loadMoreBtn.disabled = false;
+        loadMoreBtn.innerHTML = '<i class="fas fa-plus mr-2"></i>Muat Lebih Banyak';
+      } else {
+        loadMoreBtn.style.display = 'none';
+      }
+    }
+  }
+
+  createPaginationControls(pagination) {
+    const { currentPage, totalPages, hasPrev, hasNext } = pagination;
+    
+    if (totalPages <= 1) return '';
+    
+    let html = `
+      <div class="flex justify-center items-center space-x-2 mt-6 flex-wrap gap-2">
+        <button ${!hasPrev ? 'disabled' : ''} 
+                data-page="${currentPage - 1}"
+                class="px-3 py-2 rounded-lg transition-colors ${!hasPrev ? 'bg-gray-300 cursor-not-allowed text-gray-500' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+    `;
+
+    // Show page numbers
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
+
+    if (startPage > 1) {
+      html += `<button data-page="1" class="px-3 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition-colors">1</button>`;
+      if (startPage > 2) html += `<span class="px-2 text-gray-500">...</span>`;
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      const isActive = i === currentPage;
+      html += `
+        <button data-page="${i}" 
+                class="px-3 py-2 rounded-lg transition-colors ${isActive ? 'bg-indigo-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}">
+          ${i}
+        </button>
+      `;
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) html += `<span class="px-2 text-gray-500">...</span>`;
+      html += `<button data-page="${totalPages}" class="px-3 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition-colors">${totalPages}</button>`;
+    }
+
+    html += `
+        <button ${!hasNext ? 'disabled' : ''} 
+                data-page="${currentPage + 1}"
+                class="px-3 py-2 rounded-lg transition-colors ${!hasNext ? 'bg-gray-300 cursor-not-allowed text-gray-500' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    `;
+
+    return html;
+  }
+
+  setupPaginationEvents() {
+    const paginationBtns = document.querySelectorAll('[data-page]');
+    paginationBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        if (btn.disabled || this.isLoading) return;
+        const page = parseInt(btn.getAttribute('data-page'));
+        if (page && page !== this.currentPage) {
+          this.performSearch(page);
+        }
+      });
+    });
+  }
+
+  setupAutocomplete() {
+    if (!this.searchInput) return;
+    
+    let debounceTimer;
+    
+    this.searchInput.addEventListener('input', (e) => {
+      clearTimeout(debounceTimer);
+      const query = e.target.value.trim();
+      
+      if (query.length > 2) {
+        debounceTimer = setTimeout(async () => {
+          try {
+            const data = await this.api.searchMembers(query, { limit: 5 });
+            this.showSuggestions(data.results || []);
+          } catch (error) {
+            console.error('Autocomplete error:', error);
+          }
+        }, 300);
+      } else {
+        this.hideSuggestions();
+      }
+    });
+
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#searchInput') && !e.target.closest('.suggestion-box')) {
+        this.hideSuggestions();
+      }
+    });
+  }
+
+  showSuggestions(suggestions) {
+    this.hideSuggestions();
+    
+    if (!suggestions.length || !this.searchInput) return;
+
+    const suggestionBox = document.createElement('div');
+    suggestionBox.className = 'suggestion-box absolute z-50 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-64 overflow-y-auto';
+    
+    suggestions.forEach(member => {
+      const item = document.createElement('div');
+      item.className = 'px-4 py-3 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0';
+      item.innerHTML = `
+        <div class="font-medium text-gray-800">${member.nama || 'N/A'}</div>
+        <div class="text-sm text-gray-600">${member.fraksi || 'N/A'} • ${member.dapil || 'N/A'}</div>
+      `;
+      
+      item.addEventListener('click', () => {
+        this.searchInput.value = member.nama || '';
+        this.hideSuggestions();
+        this.performSearch(1);
+      });
+      
+      suggestionBox.appendChild(item);
+    });
+
+    const searchContainer = this.searchInput.parentElement;
+    searchContainer.style.position = 'relative';
+    searchContainer.appendChild(suggestionBox);
+  }
+
+  hideSuggestions() {
+    const existingSuggestions = document.querySelector('.suggestion-box');
+    if (existingSuggestions) {
+      existingSuggestions.remove();
+    }
+  }
+
+  async downloadData() {
+    if (!this.downloadBtn) return;
+    
+    try {
+      const originalText = this.downloadBtn.innerHTML;
+      this.downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span class="hidden sm:inline">Downloading...</span>';
+      this.downloadBtn.disabled = true;
+
+      const blob = await this.api.exportData('csv');
+      
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'dpr_data_export.csv';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      this.showMessage('Data berhasil didownload!', 'success');
+      
+    } catch (error) {
+      this.handleError(error, 'Download');
+    } finally {
+      if (this.downloadBtn) {
+        this.downloadBtn.innerHTML = '<i class="fas fa-download mr-1 sm:mr-2"></i><span class="hidden sm:inline">Download</span>';
+        this.downloadBtn.disabled = false;
+      }
+    }
+  }
+
+  // Utility methods
+  showLoading() {
+    this.loading?.classList.remove('hidden');
+    if (this.searchBtn) {
+      this.searchBtn.disabled = true;
+      this.searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Mencari...';
+    }
+  }
+
+  hideLoading() {
+    this.loading?.classList.add('hidden');
+    if (this.searchBtn) {
+      this.searchBtn.disabled = false;
+      this.searchBtn.innerHTML = '<i class="fas fa-search mr-2"></i>Cari';
+    }
+  }
+
+  showLoadMoreLoading() {
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    if (loadMoreBtn) {
+      loadMoreBtn.disabled = true;
+      loadMoreBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memuat...';
+    }
+  }
+
+  clearResults() {
+    if (this.results) {
+      this.results.innerHTML = '';
+    }
+  }
+
+  showError(message) {
+    if (!this.results) return;
+    
+    this.results.innerHTML = `
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-red-100 border border-red-300 text-red-700 px-4 sm:px-6 py-3 sm:py-4 rounded-xl flex items-center animate-fade-in">
+          <i class="fas fa-exclamation-triangle mr-2 sm:mr-3 text-lg sm:text-xl"></i>
+          <span class="text-sm sm:text-lg">${message}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  showMessage(message, type = 'info') {
+    const colors = {
+      success: 'bg-green-100 border-green-300 text-green-700',
+      error: 'bg-red-100 border-red-300 text-red-700',
+      info: 'bg-blue-100 border-blue-300 text-blue-700'
+    };
+    
+    const icons = {
+      success: 'fa-check-circle',
+      error: 'fa-exclamation-triangle',
+      info: 'fa-info-circle'
+    };
+
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'fixed top-20 right-4 z-50 animate-slide-up';
+    messageDiv.innerHTML = `
+      <div class="${colors[type]} px-4 py-3 rounded-lg border shadow-lg flex items-center space-x-2 max-w-xs">
+        <i class="fas ${icons[type]}"></i>
+        <span class="text-sm font-medium">${message}</span>
+      </div>
+    `;
+    
+    document.body.appendChild(messageDiv);
+    
+    setTimeout(() => {
+      messageDiv.remove();
+    }, 3000);
+  }
+
+  handleError(error, context = '') {
+    console.error(`${context} Error:`, error);
+    
+    let message = 'Terjadi kesalahan. Silakan coba lagi.';
+    
+    if (error.message.includes('timeout')) {
+      message = 'Koneksi timeout. Silakan periksa koneksi internet Anda.';
+    } else if (error.message.includes('404')) {
+      message = 'Data tidak ditemukan.';
+    } else if (error.message.includes('500')) {
+      message = 'Terjadi kesalahan server. Silakan coba lagi nanti.';
+    } else if (error.message) {
+      message = error.message;
+    }
+    
+    this.showError(message);
+  }
+
+  // Member card creation (keeping original design)
+  createMemberCard(member, index) {
+    const delay = Math.min(index * 100, 1000);
+    
+    return `
+      <div class="bg-white/70 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-white/30 cursor-pointer transform hover:scale-105 animate-fade-in" 
+           style="animation-delay: ${delay}ms"
+           onclick="dprSearch.showMemberDetail(${JSON.stringify(member).replace(/"/g, '&quot;')})">
+        
+        <div class="p-4 sm:p-6">
+          <div class="flex items-start justify-between mb-3 sm:mb-4">
+            <div class="flex-1 min-w-0">
+              <h3 class="text-base sm:text-xl font-bold text-gray-800 mb-2 line-clamp-2 break-words">
+                <i class="fas fa-user text-indigo-600 mr-2"></i>
+                ${member.nama || 'Nama tidak tersedia'}
+              </h3>
+            </div>
+            ${member.link_foto ? `
+              <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-200 overflow-hidden ml-2 sm:ml-3 flex-shrink-0">
+                <img src="${member.link_foto}" alt="Foto" class="w-full h-full object-cover" onerror="this.style.display='none'">
+              </div>
+            ` : ''}
+          </div>
+          
+          <div class="space-y-1.5 sm:space-y-2">
+            <div class="flex items-center text-xs sm:text-sm text-gray-600">
+              <i class="fas fa-flag text-blue-500 w-3 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0"></i>
+              <span class="font-medium">Fraksi:</span>
+              <span class="ml-1 truncate">${member.fraksi || 'N/A'}</span>
+            </div>
+            
+            <div class="flex items-center text-xs sm:text-sm text-gray-600">
+              <i class="fas fa-building text-green-500 w-3 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0"></i>
+              <span class="font-medium">Partai:</span>
+              <span class="ml-1 truncate">${member.partai || 'N/A'}</span>
+            </div>
+            
+            <div class="flex items-start text-xs sm:text-sm text-gray-600">
+              <i class="fas fa-map-marker-alt text-red-500 w-3 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 mt-0.5"></i>
+              <span class="font-medium">Dapil:</span>
+              <span class="ml-1 break-words">${member.dapil || 'N/A'}</span>
+            </div>
+
+            ${member.kota_lahir ? `
+                            <div class="flex items-center text-xs sm:text-sm text-gray-600">
+                                <i class="fas fa-map text-purple-500 w-3 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0"></i>
+                                <span class="font-medium">Kota Lahir:</span>
+                                <span class="ml-1 truncate">${member.kota_lahir}</span>
+                            </div>
+                        ` : ''}
+            
+            ${member.usia ? `
+              <div class="flex items-center text-xs sm:text-sm text-gray-600">
+                <i class="fas fa-calendar text-orange-500 w-3 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0"></i>
+                <span class="font-medium">Usia:</span>
+                <span class="ml-1">${member.usia} tahun</span>
+              </div>
+            ` : ''}
+          </div>
+          
+          <div class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200">
+            <button class="text-indigo-600 hover:text-indigo-800 font-medium text-xs sm:text-sm transition-colors duration-200">
+              <i class="fas fa-info-circle mr-1"></i>
+              Lihat Detail Lengkap
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  parseHistoryToTable(historyText, type) {
+    if (!historyText) return '<tr><td colspan="2" class="py-2 px-2 text-gray-500 italic">Tidak ada data</td></tr>';
+    
+    // Split by common separators and clean up
+    const items = historyText.split(/[;\n]|(?:\d+\.\s)|(?:-\s)/)
+        .map(item => item.trim())
+        .filter(item => item.length > 3)
+        .slice(0, 10); // Limit to 10 items
+    
+    if (items.length === 0) {
+        return '<tr><td colspan="2" class="py-2 px-2 text-gray-500 italic">Format data tidak dapat diparse</td></tr>';
+    }
+    
+    return items.map((item, index) => {
+        let col1 = '';
+        let col2 = '';
+        
+        if (type === 'pendidikan') {
+            const parts = item.split(/,|\(|\)|tahun|Tahun/).map(p => p.trim()).filter(p => p);
+            col1 = parts[0] || item.substring(0, 50);
+            col2 = parts.slice(1).join(', ') || '-';
+        } else if (type === 'pekerjaan') {
+            const parts = item.split(/di |pada |,/).map(p => p.trim()).filter(p => p);
+            col1 = parts[0] || item.substring(0, 50);
+            col2 = parts.slice(1).join(', ') || '-';
+        } else if (type === 'organisasi') {
+            const parts = item.split(/,|\(|\)|sebagai|Sebagai/).map(p => p.trim()).filter(p => p);
+            col1 = parts[0] || item.substring(0, 50);
+            col2 = parts.slice(1).join(', ') || '-';
+        }
+        
+        if (col1.length > 60) col1 = col1.substring(0, 57) + '...';
+        if (col2.length > 60) col2 = col2.substring(0, 57) + '...';
+        
+        const rowClass = index % 2 === 0 ? 'bg-white/50' : 'bg-white/20';
+        
+        return `
+            <tr class="${rowClass} border-b hover:bg-gray-50">
+                <td class="py-2 px-3 break-words">${col1}</td>
+                <td class="py-2 px-3 break-words text-gray-600">${col2}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+  showMemberDetail(member) {
+    const modalContent = `
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <!-- Profile Photo -->
+            <div class="lg:col-span-1">
+                ${member.link_foto ? `
+                    <div class="bg-gray-100 rounded-xl overflow-hidden">
+                        <img src="${member.link_foto}" alt="Foto ${member.nama}" 
+                             class="w-full h-48 sm:h-64 object-cover" 
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDIwMCAyNTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjU2IiBmaWxsPSIjRTVFN0VCIi8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iNDAiIGZpbGw9IiM5Q0E0QUYiLz4KPHA+Jz4='; this.alt='Foto tidak tersedia'">
+                    </div>
+                ` : `
+                    <div class="bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl h-48 sm:h-64 flex items-center justify-center">
+                        <i class="fas fa-user text-4xl sm:text-6xl text-gray-400"></i>
+                    </div>
+                `}
+                
+                ${member.link_profil ? `
+                    <a href="${member.link_profil}" target="_blank" 
+                       class="block mt-3 sm:mt-4 bg-indigo-600 hover:bg-indigo-700 text-white px-3 sm:px-4 py-2 rounded-lg text-center transition-colors duration-200 text-sm sm:text-base">
+                        <i class="fas fa-external-link-alt mr-2"></i>
+                        Lihat Profil Resmi
+                    </a>
+                ` : ''}
+            </div>
+            
+            <!-- Member Details -->
+            <div class="lg:col-span-2">
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 break-words">${member.nama || 'Nama tidak tersedia'}</h3>
+                
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="space-y-3 sm:space-y-4">
+                        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-700 mb-2 text-sm sm:text-base flex items-center">
+                                <i class="fas fa-flag text-blue-500 mr-2"></i>
+                                Informasi Politik
+                            </h4>
+                            <div class="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
+                                <div><span class="font-medium">Fraksi:</span> <span class="break-words">${member.fraksi || 'N/A'}</span></div>
+                                <div><span class="font-medium">Partai:</span> <span class="break-words">${member.partai || 'N/A'}</span></div>
+                                <div><span class="font-medium">Dapil:</span> <span class="break-words">${member.dapil || 'N/A'}</span></div>
+                                <div><span class="font-medium">AKD:</span> <span class="break-words">${member.akd_clean || 'N/A'}</span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-700 mb-2 text-sm sm:text-base flex items-center">
+                                <i class="fas fa-user-circle text-green-500 mr-2"></i>
+                                Data Pribadi
+                            </h4>
+                            <div class="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
+                                <div><span class="font-medium">TTL:</span> <span class="break-words">${member.ttl || 'N/A'}</span></div>
+                                <div><span class="font-medium">Kota Lahir:</span> <span class="break-words">${member.kota_lahir || 'N/A'}</span></div>
+                                <div><span class="font-medium">Usia:</span> ${member.usia ? `${member.usia} tahun` : 'N/A'}</div>
+                                <div><span class="font-medium">Agama:</span> ${member.agama || 'N/A'}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-700 mb-2 text-sm sm:text-base flex items-center">
+                                <i class="fas fa-briefcase text-purple-500 mr-2"></i>
+                                Pendidikan & Pekerjaan
+                            </h4>
+                            <div class="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
+                                <div><span class="font-medium">Pendidikan Terakhir:</span> <span class="break-words">${member.pendidikan_terakhir || 'N/A'}</span></div>
+                                <div><span class="font-medium">Pekerjaan:</span> <span class="break-words">${member.pekerjaan && member.pekerjaan.length <= 50 ? member.pekerjaan : (member.pekerjaan ? member.pekerjaan.substring(0, 50) + '...' : 'N/A')}</span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-700 mb-2 text-sm sm:text-base flex items-center">
+                                <i class="fas fa-info-circle text-orange-500 mr-2"></i>
+                                Status
+                            </h4>
+                            <div class="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
+                                <div><span class="font-medium">Kader:</span> ${member.is_kader === '1' ? 'Ya' : 'Tidak'}</div>
+                                <div><span class="font-medium">Dewan:</span> ${member.is_dewan === '1' ? 'Ya' : 'Tidak'}</div>
+                                <div><span class="font-medium">Kategori Usia:</span> ${member.usia_kategori || 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                ${member.pendidikan || member.pekerjaan || member.organisasi ? `
+                    <div class="mt-4 sm:mt-6 space-y-3 sm:space-y-4">
+                        ${member.pendidikan ? `
+                            <div class="bg-blue-50 p-3 sm:p-4 rounded-lg border border-blue-200">
+                                <h4 class="font-semibold text-blue-800 mb-3 text-sm sm:text-base flex items-center">
+                                    <i class="fas fa-graduation-cap mr-2"></i>
+                                    Riwayat Pendidikan
+                                </h4>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-xs sm:text-sm border-collapse bg-white rounded-lg overflow-hidden shadow-sm">
+                                        <thead>
+                                            <tr class="bg-blue-100 border-b-2 border-blue-300">
+                                                <th class="text-left py-3 px-3 font-semibold text-blue-800 w-1/2">Jenjang/Institusi</th>
+                                                <th class="text-left py-3 px-3 font-semibold text-blue-800 w-1/2">Tahun/Keterangan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white">
+                                            ${this.parseHistoryToTable(member.pendidikan, 'pendidikan')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${member.pekerjaan && member.pekerjaan.length > 50 ? `
+                            <div class="bg-orange-50 p-3 sm:p-4 rounded-lg border border-orange-200">
+                                <h4 class="font-semibold text-orange-800 mb-3 text-sm sm:text-base flex items-center">
+                                    <i class="fas fa-briefcase mr-2"></i>
+                                    Riwayat Pekerjaan
+                                </h4>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-xs sm:text-sm border-collapse bg-white rounded-lg overflow-hidden shadow-sm">
+                                        <thead>
+                                            <tr class="bg-orange-100 border-b-2 border-orange-300">
+                                                <th class="text-left py-3 px-3 font-semibold text-orange-800 w-1/2">Posisi/Jabatan</th>
+                                                <th class="text-left py-3 px-3 font-semibold text-orange-800 w-1/2">Instansi/Perusahaan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white">
+                                            ${this.parseHistoryToTable(member.pekerjaan, 'pekerjaan')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${member.organisasi ? `
+                            <div class="bg-green-50 p-3 sm:p-4 rounded-lg border border-green-200">
+                                <h4 class="font-semibold text-green-800 mb-3 text-sm sm:text-base flex items-center">
+                                    <i class="fas fa-users mr-2"></i>
+                                    Riwayat Organisasi
+                                </h4>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-xs sm:text-sm border-collapse bg-white rounded-lg overflow-hidden shadow-sm">
+                                        <thead>
+                                            <tr class="bg-green-100 border-b-2 border-green-300">
+                                                <th class="text-left py-3 px-3 font-semibold text-green-800 w-1/2">Organisasi</th>
+                                                <th class="text-left py-3 px-3 font-semibold text-green-800 w-1/2">Jabatan/Periode</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white">
+                                            ${this.parseHistoryToTable(member.organisasi, 'organisasi')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+
+    this.modalContent.innerHTML = modalContent;
+    this.showModal();
+}
+
+  showModal() {
+    this.modal?.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  hideModal() {
+    this.modal?.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  }
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  window.dprSearch = new DPRSearch();
+});
+    </script>
+</body>
+</html>
+
+
