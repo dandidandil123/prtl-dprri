@@ -15,15 +15,15 @@ untuk tujuan komersial atau penyalahgunaan data pribadi**.
 ------------------------------------------------------------------------
 ## 📂 Struktur Folder
 
-
-├── public/
-│ ├── index.html
-│ ├── dashboard.html (jika ada)
-├── server.js
-├── package.json
-├── render.yaml
-├── dpr_data.db # Database SQLite siap pakai
-├── dpr_data_clean.csv # Data mentah (hasil leak/farm)
+    .
+    ├── public/
+    │   ├── index.html
+    │   ├── dashboard.html (jika ada)
+    ├── server.js
+    ├── package.json
+    ├── render.yaml
+    ├── dpr_data.db            # Database SQLite siap pakai
+    ├── dpr_data_clean.csv     # Data mentah (hasil leak/farm)
 ------------------------------------------------------------------------
 
 ## 🚀 Menjalankan Secara Lokal
