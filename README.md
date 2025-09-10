@@ -18,7 +18,7 @@ untuk tujuan komersial atau penyalahgunaan data pribadi**.
     .
     ├── public/
     │   ├── index.html
-    │   ├── dashboard.html (jika ada)
+    │   ├── dashboard.html
     ├── server.js
     ├── package.json
     ├── render.yaml
@@ -32,7 +32,7 @@ untuk tujuan komersial atau penyalahgunaan data pribadi**.
 
 ``` bash
 git clone https://github.com/dandidandil123/prtl-dprri.git
-cd nama-repo
+cd prtl-dprri
 ```
 
 2.  **Install dependencies**
