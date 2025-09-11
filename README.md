@@ -63,7 +63,7 @@ API tersedia di `http://localhost:3000/api/...`
 ![Homepage](screenshots/home.png)
 
 ### 3. Dashboard - Analytics Data DPR RI
-![Dashboard](screenshots/dashoard.png)
+![Dashboard](screenshots/dasboard.png)
 
 ### 4. Result Search - Hasil Pencarian
 ![Search Result](screenshots/search_result.png)
